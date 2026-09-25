@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Resume Job Matcher",
+  "version": "1.0",
+  "description": "Paste your resume, get AI-analyzed job matches from Adzuna listings.",
+  "permissions": ["storage", "tabs"],
+  "host_permissions": [
+    "https://api.anthropic.com/*",
+    "https://api.adzuna.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Resume Job Matcher"
+  }
+}
