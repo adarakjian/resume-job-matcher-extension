@@ -200,7 +200,9 @@ function setStatus(msg: string) {
   statusEl.textContent = msg;
 }
 
+/** Toggles the busy state: disables input, updates button text. */
 function setBusy(busy: boolean) {
   analyzeBtn.disabled = busy;
+  resumeInput.disabled = busy;
   analyzeBtn.textContent = busy ? "Working..." : "Find Matching Jobs";
 }

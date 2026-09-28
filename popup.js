@@ -143,5 +143,6 @@ function setStatus(msg) {
 }
 function setBusy(busy) {
     analyzeBtn.disabled = busy;
+    resumeInput.disabled = busy;
     analyzeBtn.textContent = busy ? "Working..." : "Find Matching Jobs";
 }
