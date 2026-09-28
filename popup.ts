@@ -56,6 +56,11 @@ analyzeBtn.addEventListener("click", async () => {
     return;
   }
 
+  if (!configLooksValid()) {
+    setStatus("Adzuna API keys aren't set up yet — check config.js.");
+    return;
+  }
+
   try {
     setBusy(true);
     setStatus("Scanning resume for titles and skills...");
@@ -73,6 +78,25 @@ analyzeBtn.addEventListener("click", async () => {
     setBusy(false);
   }
 });
+
+/**
+ * Quick sanity check that config.js was actually filled in, rather than
+ * left as the placeholder values from config.example.js. Catches the most
+ * common setup mistake (forgetting to add real keys) with a clear message
+ * instead of letting it fail later as a confusing network error.
+ */
+function configLooksValid(): boolean {
+  if (typeof CONFIG === "undefined") return false;
+  const placeholderValues = ["app id", "app key", "your-adzuna-app-id-here", "your-adzuna-app-key-here"];
+  return (
+    Boolean(CONFIG.ADZUNA_APP_ID) &&
+    Boolean(CONFIG.ADZUNA_APP_KEY) &&
+    !placeholderValues.includes(CONFIG.ADZUNA_APP_ID) &&
+    !placeholderValues.includes(CONFIG.ADZUNA_APP_KEY)
+  );
+}
+
+function analyzeResumeLocally(resumeText: string): ResumeSummary {
 
 function analyzeResumeLocally(resumeText: string): ResumeSummary {
   const lowerText = resumeText.toLowerCase();

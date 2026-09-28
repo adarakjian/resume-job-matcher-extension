@@ -20,8 +20,12 @@ const statusEl = document.getElementById("status");
 const resultsEl = document.getElementById("results");
 analyzeBtn.addEventListener("click", async () => {
     const resumeText = resumeInput.value.trim();
-    if (!resumeText) {
+        if (!resumeText) {
         setStatus("Please paste your resume text first.");
+        return;
+    }
+    if (!configLooksValid()) {
+        setStatus("Adzuna API keys aren't set up yet — check config.js.");
         return;
     }
     try {
@@ -41,6 +45,17 @@ analyzeBtn.addEventListener("click", async () => {
         setBusy(false);
     }
 });
+
+function configLooksValid() {
+    if (typeof CONFIG === "undefined") return false;
+    const placeholderValues = ["app id", "app key", "your-adzuna-app-id-here", "your-adzuna-app-key-here"];
+    return (Boolean(CONFIG.ADZUNA_APP_ID) &&
+        Boolean(CONFIG.ADZUNA_APP_KEY) &&
+        !placeholderValues.includes(CONFIG.ADZUNA_APP_ID) &&
+        !placeholderValues.includes(CONFIG.ADZUNA_APP_KEY));
+}
+function analyzeResumeLocally(resumeText) {
+
 function analyzeResumeLocally(resumeText) {
     const lowerText = resumeText.toLowerCase();
     const foundTitles = KNOWN_TITLES.filter((title) => lowerText.includes(title));
