@@ -19,8 +19,7 @@ issues through logs, APIs, and system integrations.
    seniority words and years-of-experience mentions).
 3. The best-matching title and skill are combined into a search query sent
    to the Adzuna job search API.
-4. The top 5 matching listings are displayed with title, company, location,
-   and a direct link.
+4. Duplicate listings (same underlying job posted by multiple aggregators) are filtered out. The top 10 matching listings are displayed with title, company, location, and a direct link that opens in a background tab.
 
 ## Tech used
 
