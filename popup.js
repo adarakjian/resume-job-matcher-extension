@@ -20,7 +20,7 @@ const statusEl = document.getElementById("status");
 const resultsEl = document.getElementById("results");
 analyzeBtn.addEventListener("click", async () => {
     const resumeText = resumeInput.value.trim();
-        if (!resumeText) {
+    if (!resumeText) {
         setStatus("Please paste your resume text first.");
         return;
     }
@@ -45,17 +45,15 @@ analyzeBtn.addEventListener("click", async () => {
         setBusy(false);
     }
 });
-
 function configLooksValid() {
-    if (typeof CONFIG === "undefined") return false;
+    if (typeof CONFIG === "undefined")
+        return false;
     const placeholderValues = ["app id", "app key", "your-adzuna-app-id-here", "your-adzuna-app-key-here"];
     return (Boolean(CONFIG.ADZUNA_APP_ID) &&
         Boolean(CONFIG.ADZUNA_APP_KEY) &&
         !placeholderValues.includes(CONFIG.ADZUNA_APP_ID) &&
         !placeholderValues.includes(CONFIG.ADZUNA_APP_KEY));
 }
-function analyzeResumeLocally(resumeText) {
-
 function analyzeResumeLocally(resumeText) {
     const lowerText = resumeText.toLowerCase();
     const foundTitles = KNOWN_TITLES.filter((title) => lowerText.includes(title));
@@ -92,7 +90,6 @@ async function searchJobs(keywords) {
     const data = await response.json();
     return (data.results || []);
 }
-
 function dedupeJobs(jobs) {
     const seen = new Set();
     const unique = [];
@@ -104,8 +101,6 @@ function dedupeJobs(jobs) {
     }
     return unique;
 }
-function renderJobs(jobs) {
-
 function renderJobs(jobs) {
     resultsEl.innerHTML = "";
     if (jobs.length === 0) {
@@ -120,11 +115,6 @@ function renderJobs(jobs) {
       <div class="job-company">${escapeHtml(job.company?.display_name || "Unknown company")} — ${escapeHtml(job.location?.display_name || "")}</div>
       <a class="job-link" href="#">View listing →</a>
     `;
-        // Open in a background tab instead of following the href directly.
-        // A normal target="_blank" click shifts focus to the new tab, and
-        // Chrome auto-closes extension popups the instant they lose focus.
-        // Opening the tab as inactive keeps the popup open so the user can
-        // click through several listings without it disappearing each time.
         const link = card.querySelector(".job-link");
         link.addEventListener("click", (e) => {
             e.preventDefault();

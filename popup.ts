@@ -96,8 +96,11 @@ function configLooksValid(): boolean {
   );
 }
 
-function analyzeResumeLocally(resumeText: string): ResumeSummary {
-
+/**
+ * Scans resume text for known job titles and skills, and makes a rough
+ * guess at experience level based on seniority words or a "N years"
+ * pattern. This is a simple local stand-in for AI-based extraction.
+ */
 function analyzeResumeLocally(resumeText: string): ResumeSummary {
   const lowerText = resumeText.toLowerCase();
 
@@ -126,6 +129,10 @@ function analyzeResumeLocally(resumeText: string): ResumeSummary {
   };
 }
 
+/**
+ * Queries the Adzuna job search API for listings matching the given
+ * keywords and returns the raw results array.
+ */
 async function searchJobs(keywords: string): Promise<AdzunaJob[]> {
   const country = CONFIG.ADZUNA_COUNTRY || "us";
   const url =
@@ -157,8 +164,11 @@ function dedupeJobs(jobs: AdzunaJob[]): AdzunaJob[] {
   return unique;
 }
 
-function renderJobs(jobs: AdzunaJob[]) {
-
+/**
+ * Renders a list of job cards into the results container. Each card's
+ * link opens in a background tab (rather than following the href
+ * directly) so the popup doesn't lose focus and auto-close.
+ */
 function renderJobs(jobs: AdzunaJob[]) {
   resultsEl.innerHTML = "";
   if (jobs.length === 0) {
@@ -175,11 +185,6 @@ function renderJobs(jobs: AdzunaJob[]) {
       <a class="job-link" href="#">View listing →</a>
     `;
 
-    // Open in a background tab instead of following the href directly.
-    // A normal target="_blank" click shifts focus to the new tab, and
-    // Chrome auto-closes extension popups the instant they lose focus.
-    // Opening the tab as inactive keeps the popup open so the user can
-    // click through several listings without it disappearing each time.
     const link = card.querySelector(".job-link") as HTMLAnchorElement;
     link.addEventListener("click", (e) => {
       e.preventDefault();
@@ -190,6 +195,7 @@ function renderJobs(jobs: AdzunaJob[]) {
   }
 }
 
+/** Escapes a string for safe insertion into innerHTML. */
 function escapeHtml(str: string): string {
   const div = document.createElement("div");
   div.textContent = str;
