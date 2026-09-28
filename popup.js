@@ -33,7 +33,7 @@ analyzeBtn.addEventListener("click", async () => {
         setStatus("Scanning resume for titles and skills...");
         const summary = analyzeResumeLocally(resumeText);
         setStatus(`Searching for: ${summary.search_keywords}`);
-        const jobs = await searchJobs(summary.search_keywords);
+        const jobs = dedupeJobs(await searchJobs(summary.search_keywords));
         renderJobs(jobs.slice(0, 10));
         setStatus(`Found ${jobs.length} matches. Showing top ${Math.min(10, jobs.length)}.`);
     }
@@ -85,13 +85,27 @@ async function searchJobs(keywords) {
     const url = `https://api.adzuna.com/v1/api/jobs/${country}/search/1` +
         `?app_id=${CONFIG.ADZUNA_APP_ID}` +
         `&app_key=${CONFIG.ADZUNA_APP_KEY}` +
-        `&results_per_page=10` +
+        `&results_per_page=20` +
         `&what=${encodeURIComponent(keywords)}` +
         `&content-type=application/json`;
     const response = await fetch(url);
     const data = await response.json();
     return (data.results || []);
 }
+
+function dedupeJobs(jobs) {
+    const seen = new Set();
+    const unique = [];
+    for (const job of jobs) {
+        if (seen.has(job.redirect_url))
+            continue;
+        seen.add(job.redirect_url);
+        unique.push(job);
+    }
+    return unique;
+}
+function renderJobs(jobs) {
+
 function renderJobs(jobs) {
     resultsEl.innerHTML = "";
     if (jobs.length === 0) {

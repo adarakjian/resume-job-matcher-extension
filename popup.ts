@@ -67,7 +67,7 @@ analyzeBtn.addEventListener("click", async () => {
     const summary = analyzeResumeLocally(resumeText);
 
     setStatus(`Searching for: ${summary.search_keywords}`);
-    const jobs = await searchJobs(summary.search_keywords);
+    const jobs = dedupeJobs(await searchJobs(summary.search_keywords));
 
     renderJobs(jobs.slice(0, 10));
     setStatus(`Found ${jobs.length} matches. Showing top ${Math.min(10, jobs.length)}.`);
@@ -132,7 +132,7 @@ async function searchJobs(keywords: string): Promise<AdzunaJob[]> {
     `https://api.adzuna.com/v1/api/jobs/${country}/search/1` +
     `?app_id=${CONFIG.ADZUNA_APP_ID}` +
     `&app_key=${CONFIG.ADZUNA_APP_KEY}` +
-    `&results_per_page=10` +
+    `&results_per_page=20` +
     `&what=${encodeURIComponent(keywords)}` +
     `&content-type=application/json`;
 
@@ -140,6 +140,24 @@ async function searchJobs(keywords: string): Promise<AdzunaJob[]> {
   const data = await response.json();
   return (data.results || []) as AdzunaJob[];
 }
+
+/**
+ * Adzuna sometimes returns near-duplicate postings from different
+ * aggregators pointing at the same underlying listing. This keeps only
+ * the first job seen for each unique redirect URL.
+ */
+function dedupeJobs(jobs: AdzunaJob[]): AdzunaJob[] {
+  const seen = new Set<string>();
+  const unique: AdzunaJob[] = [];
+  for (const job of jobs) {
+    if (seen.has(job.redirect_url)) continue;
+    seen.add(job.redirect_url);
+    unique.push(job);
+  }
+  return unique;
+}
+
+function renderJobs(jobs: AdzunaJob[]) {
 
 function renderJobs(jobs: AdzunaJob[]) {
   resultsEl.innerHTML = "";
